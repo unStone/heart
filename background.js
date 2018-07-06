@@ -49,10 +49,14 @@ var manage = (function(){
   var setEnabled = function(id, enabled, callback) {
     chrome.management.setEnabled(id, enabled, callback)
   }
+  var uninstall = function(id, callback) {
+    chrome.management.uninstall(id, callback)
+  }
   return {
     getAll: getAll,
     launchApp: launchApp,
     setEnabled: setEnabled,
+    uninstall: uninstall,
   }
 })()
 
