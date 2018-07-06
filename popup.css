@@ -1,4 +1,59 @@
 #root {
   width: 200px;
-  height: 300px;
+  /* height: 300px; */
 }
+
+#manage {
+  margin-top: 20px;
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.iconBox {
+  position: relative;
+  height: 30px;
+  width: 30px;
+  margin: 0 10px 16px 0;
+  cursor: pointer;
+}
+
+.on:before {
+  content: 'on';
+  display: block;
+  background-color: #99CC66;
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -10px;
+  color: #fff;
+  font-size: 12px;
+  line-height: 12px;
+  height: 12px;
+  border-radius: 12px;
+  text-align: center;
+}
+
+.off:before {
+  content: 'off';
+  display: block;
+  background-color: #FF6666;
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -10px;
+  color: #fff;
+  font-size: 12px;
+  line-height: 12px;
+  height: 12px;
+  border-radius: 12px;
+  text-align: center;
+}
+
+/* .gray { 
+  -webkit-filter: grayscale(100%);
+  -moz-filter: grayscale(100%);
+  -ms-filter: grayscale(100%);
+  -o-filter: grayscale(100%);
+  filter: grayscale(100%);
+  filter: gray;
+} */

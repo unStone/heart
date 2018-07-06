@@ -9,19 +9,13 @@
 </head>
 <body>
   <div id="root">
-    <div>
-      <span>限制网址</span>
-      <input id="cacheUrlList" type="text" placeholder="多个网址请用 ',' 分格">
-      <span id="ruleOfUrl" data-help="https://developer.chrome.com/extensions/match_patterns">?</span>
-    </div>
-    <div>
-      <span>不使用缓存</span>
-      <input type="radio" name="cache" id="cacheRadio0" class="cacheRadio" data-index="0">
-      <label for="cacheRadio0"> 否 </label>
-      <input type="radio" name="cache" id="cacheRadio1" class="cacheRadio" data-index="1">
-      <label for="cacheRadio1"> 弱 </label>
-      <input type="radio" name="cache" id="cacheRadio2" class="cacheRadio" data-index="2">
-      <label for="cacheRadio2"> 强 </label>
+    <span>是否使用缓存</span>
+    <input type="radio" name="cache" id="cacheRadio0" class="cacheRadio" data-index="0">
+    <label for="cacheRadio0"> 是 </label>
+    <input type="radio" name="cache" id="cacheRadio1" class="cacheRadio" data-index="1">
+    <label for="cacheRadio1"> 否 </label>
+    <div id="manage">
+
     </div>
   </div>
 </body>

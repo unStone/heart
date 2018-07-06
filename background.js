@@ -1,110 +1,58 @@
-// 暂定百分点
+var clearCache = function() {
+  var millisecondsPerWeek = 1000 * 60 * 60 * 24 * 7;
+  var oneWeekAgo = (new Date()).getTime() - millisecondsPerWeek;
+  
+  //Chrome 19:
+  chrome.browsingData.removeCache({
+      "since": oneWeekAgo
+    }, function() {
+    clearRunning = false;
+  });
+};
+
+var doClearCache = function(cacheType) {
+  if(cacheType == 1) clearCache();
+}
+
 var popup = (function(){
   var cacheType = '0';
-
-  var getFilterUrl = function() {
-    return JSON.parse(localStorage.getItem('filterUrl')) || ['<all_urls>']
-  }
-  var setFilterUrl = function(filterUrl) {
-    localStorage.setItem('filterUrl', JSON.stringify(filterUrl))
-  }
   var getCacheType = function() {
-    return cacheType
+    return localStorage.getItem('cacheType') || '0'
   }
   var setCacheType = function(newCacheType) {
-    cacheType = newCacheType;
+    doClearCache(newCacheType);
+    localStorage.setItem('cacheType', newCacheType)
   }
 
   return {
-    getFilterUrl: getFilterUrl,
-    setFilterUrl: setFilterUrl,
     getCacheType: getCacheType,
     setCacheType: setCacheType,
   }
 })()
 
-var getArrObjKeyValue = function(arr) {
-  if(!Array.isArray(arr)) return{};
-  var keyvalue = {};
-  arr.forEach(function(obj) {
-    keyvalue[obj.name] = obj.value;
-  })
+chrome.webRequest.onBeforeRequest.addListener(
+  function(detail) {
+    doClearCache(popup.getCacheType());
+  },
+  {urls: ["<all_urls>"]},
+)
 
-  return keyvalue
-}
-
-var setArrObjKeyValue = function(obj) {
-  var arr = [];
-  for(k in obj) {
-    arr.push({
-      name: k,
-      value: obj[k]
+var manage = (function(){
+  var getAll = function(callback) {
+    chrome.management.getAll(function(manage) {
+      callback(manage)
     })
   }
-  return arr
-}
+  var launchApp = function(id) {
+    chrome.management.launchApp(id)
+  }
+  var setEnabled = function(id, enabled, callback) {
+    chrome.management.setEnabled(id, enabled, callback)
+  }
+  return {
+    getAll: getAll,
+    launchApp: launchApp,
+    setEnabled: setEnabled,
+  }
+})()
 
-var i = 0;
-
-chrome.runtime.onInstalled.addListener(function() {
-  chrome.webRequest.onBeforeRequest.addListener(
-    function(details) {
-      var random = `random=${Math.random().toString(16)}${Math.random().toString(16)}`
-      var returnType = {
-        0: function() {
-          return {
-            cancel: false,
-          }
-        },
-        1: function() {
-          return {
-            cancel: false,
-          }
-        },
-        2: function() {
-          if(/random=/.test(details.url)) {
-            return {
-              cancel: false,
-            }
-          } else {
-            return {
-              redirectUrl: `${details.url.indexOf('?') !== -1 
-                          ? details.url + '&' + random
-                          : details.url + '?' + random}`
-            }
-          }
-          if(/random=.*random=/.test(details.url)) {
-            return {
-              cancel: true,
-            }
-          }
-        },
-      }
-
-      return returnType[popup.getCacheType()] ? returnType[popup.getCacheType()]() : returnType[0]();
-    },
-    {urls: popup.getFilterUrl()},
-    ["blocking"]
-  )
-  
-  chrome.webRequest.onBeforeSendHeaders.addListener(
-    function(details) {
-      var noCacheHeader = {
-        cache: 'false',
-        'Cache-Control': 'no-cache',
-        'If-Modified-Since': '0',
-      }
-      var oldRequestHeader = details.requestHeaders;
-      var newRequestHeader = Object.assign(getArrObjKeyValue(details.requestHeaders), noCacheHeader)
-      var returnType = {
-        0: function() {return {requestHeaders: oldRequestHeader};},
-        1: function() {return {requestHeaders: setArrObjKeyValue(newRequestHeader)};},
-        2: function() {return {requestHeaders: setArrObjKeyValue(newRequestHeader)};},
-      }
-
-      return returnType[popup.getCacheType()] ? returnType[popup.getCacheType()]() : returnType[0]()
-    },
-    {urls: popup.getFilterUrl()},
-    ["blocking", "requestHeaders"]
-  )
-});
